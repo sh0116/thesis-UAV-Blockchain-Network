@@ -1,0 +1,11 @@
+APScheduler==3.10.1
+asgiref==3.6.0
+backports.zoneinfo==0.2.1;python_version<"3.9"
+Django==4.1.7
+psycopg2-binary==2.9.5
+pytz==2022.7.1
+pytz-deprecation-shim==0.1.0.post0
+six==1.16.0
+sqlparse==0.4.3
+tzdata==2022.7
+tzlocal==4.3
