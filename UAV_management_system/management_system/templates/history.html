@@ -1,0 +1,24 @@
+<!-- templates/map.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-time UAV tracking</title>
+    <style>
+        #map {
+            height: 800px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAT00O97_A1nK28CxQSplpakDHzYpIrpgs&callback=initMap&v=weekly" defer></script>
+    <script>
+        window.markerData = JSON.parse('{{ markers|escapejs }}');
+    </script>
+    <script src="{% static 'js/map.js' %}"></script>
+  </head>
+  <body onload="initMap()">
+      <h1>Real-time UAV tracker</h1>  
+      <div id="map"></div>
+      <p id="clicked-coordinates"></p>
+  </body>
+</html>
