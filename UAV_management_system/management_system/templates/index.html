@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Dashboard - SB Admin</title>
+        <title>UAV Management System</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="{% static 'css/styles.css' %}" type="text/css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
@@ -16,7 +16,7 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="{% url 'dashboard' %}">UAV Management System</a>
+            <a class="navbar-brand ps-3" href="{% url 'index' %}">UAV Management System</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar-->
@@ -42,7 +42,7 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Home
                             </a>
-                            <a class="nav-link" href="{% url 'index' %}">
+                            <a class="nav-link" href="{% url 'dashboard' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
@@ -58,13 +58,13 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="{% url 'channel' 'movement'%}">Movement</a>
-                                    <a class="nav-link" href="{% url 'channel' 'reconnaissance'%}">Reconnaissance</a>
-                                    <a class="nav-link" href="{% url 'channel' 'attack'%}">Attack</a>
+                                    <a class="nav-link" href="{% url 'mission' 'movement'%}">Movement</a>
+                                    <a class="nav-link" href="{% url 'mission' 'reconnaissance'%}">Reconnaissance</a>
+                                    <a class="nav-link" href="{% url 'mission' 'attack'%}">Attack</a>
                                 </nav>
                             </div>
                             <div class="sb-sidenav-menu-heading">Real-time</div>                            
-                            <a class="nav-link" href="{% url 'history' %}">
+                            <a class="nav-link" href="{% url 'tracker' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Map
                             </a>
