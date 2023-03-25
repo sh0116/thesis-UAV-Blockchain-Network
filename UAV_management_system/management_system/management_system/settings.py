@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-fsx2fqa4#dc=#2p=&4!2de@fnj1#f9wd1=#0xqj0b@k-)@ww)l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['192.168.72.128', 'localhost', '0.0.0.0', ]
 
 
 # Application definition
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'uav.myapp.MyappConfig'
+    'myapp.apps.MyappConfig',
     'bootstrap4',
     'posts',
     'corsheaders',
