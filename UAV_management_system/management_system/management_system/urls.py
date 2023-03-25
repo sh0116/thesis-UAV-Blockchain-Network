@@ -21,9 +21,11 @@ app_name = 'myapp'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
+    path('login/', views.UAV_LoginView.as_view(), name='login'),
     path('dashboard/', views.index, name='dashboard'),
     path('history/', views.history, name='history'),
-    path('channel/<str:channel_name>/', views.channel, name='channel'),
+    path('tracker/', views.tracker, name='tracker'),
+    path('mission/<str:mission_name>/', views.mission, name='mission'),
     path('pages/', views.index, name='pages'),
     path('client/', views.client, name='client'),
 ]

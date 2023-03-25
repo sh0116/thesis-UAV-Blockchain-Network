@@ -1,6 +1,7 @@
 {% load static %}
 <html>
   <head>
+    <title>Real-time UAV tracking</title>
     <link href="https://unpkg.com/maplibre-gl@1.14.0/dist/maplibre-gl.css" rel="stylesheet" />
     <style>
       body { margin: 0; }
@@ -8,6 +9,7 @@
     </style>
   </head>
   <body>
+    <h1>Real-time UAV tracker</h1>  
     <div id="map" />
     <script src="https://unpkg.com/maplibre-gl@1.14.0/dist/maplibre-gl.js"></script>
     <script src="{% static 'js/map.js' %}"></script>
