@@ -7,6 +7,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 import json, os, requests
 
 from django.conf import settings
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3bb20780f00f0da7dbfcf099c807bd1e79455654
 
 class UAV_LoginView(LoginView):
     template_name = 'login.html'  # 사용자 정의 로그인 템플릿을 지정합니다.
