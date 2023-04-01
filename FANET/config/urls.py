@@ -18,7 +18,10 @@ from django.urls import path
 from uav import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('iamnotadmin/', admin.site.urls),
     path('uav/', views.uav),
+    path('start_task/', views.start_task, name='start_task'),
+    path('check_task/<str:task_id>/', views.check_task, name='check_task'),
+    path('cancel_task/<str:task_id>/', views.cancel_task, name='cancel_task'),
 ]
 
