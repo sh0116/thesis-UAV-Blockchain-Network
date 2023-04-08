@@ -38,19 +38,27 @@ def uav(request):
 def start_task(request):
     if request.method == 'PUT':
         data = json.loads(request.body)
-        src_lat = Uav.objects.get(pk=data.get('PK')).latitude
-        src_lng = Uav.objects.get(pk=data.get('PK')).longitude
+        print(data)
+        manager = Uav.objects.get(uav_manager=data.get('uav_manager'))
+        src_lat = manager.latitude
+        src_lng = manager.longitude
         dest_lat = float(data.get('latitude'))
         dest_lng = float(data.get('longitude'))
         speed_kph = 200.0
         time_interval = 2  # 2초 간격
+        mission_id = data.get('mission_id')
+        task_id = data.get('task_id')
+        host = data.get('host')
+        auth = data.get('auth')
+        uav_id = manager.id
 
-        uav_id = data.get('PK')
-
-        task = update_uav_position.apply_async(args=(uav_id, src_lat, src_lng, dest_lat, dest_lng, speed_kph))
+        task = update_uav_position.apply_async(args=(uav_id, src_lat, src_lng, dest_lat, dest_lng, speed_kph, task_id, mission_id, host, auth))
         
-        return JsonResponse({'task_id': task.id}, status=202)
-
+        return JsonResponse({
+                    'task_id': task.id,
+                    'latitude': str(src_lat),
+                    'longitude': str(src_lng)
+                }, status=202)
 
 @csrf_exempt
 def check_task(request, task_id):
