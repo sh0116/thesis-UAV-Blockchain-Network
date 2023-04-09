@@ -1,0 +1,15 @@
+{% load static %}
+<html>
+  <head>
+    <link href="https://unpkg.com/maplibre-gl@1.14.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <style>
+      body { margin: 0; }
+      #map { height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="map" />
+    <script src="https://unpkg.com/maplibre-gl@1.14.0/dist/maplibre-gl.js"></script>
+    <script src="{% static 'js/map.js' %}"></script>
+  </body>
+</html>

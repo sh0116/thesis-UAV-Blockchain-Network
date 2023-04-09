@@ -1,0 +1,336 @@
+{% load static %}
+{% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>UAV Management System</title>
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+        <link href="{% static 'css/styles.css' %}" type="text/css" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <script>window.markerData = JSON.parse('{{ markers|escapejs }}');</script>
+        <style>
+            table {
+                width: 100%;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        </style>
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3" href="{% url 'index' %}">UAV Management System</a>
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Main</div>
+                            <a class="nav-link" href="{% url 'index' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Home
+                            </a>
+                            <a class="nav-link" href="{% url 'dashboard' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Transaction</div>                            
+                            <a class="nav-link" href="{% url 'history' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                History
+                            </a>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Mission
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="{% url 'mission' 'movement'%}">Movement</a>
+                                    <a class="nav-link" href="{% url 'mission' 'reconnaissance'%}">Reconnaissance</a>
+                                    <a class="nav-link" href="{% url 'mission' 'attack'%}">Attack</a>
+                                </nav>
+                            </div>
+                            <div class="sb-sidenav-menu-heading">Real-time</div>                            
+                            <a class="nav-link" href="{% url 'tracker' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Map
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Home</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Home</li>
+                        </ol>
+                        <div class="row">
+                            <div class="col-xl-3">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-bar me-1"></i>
+                                        User Infomation
+                                    </div>
+                                    <h3 > 
+                                        {{ user.username }}'s Profile
+                                    </h3>
+                                    <table class="table table-bordered">
+                                      <tbody>
+                                        <tr>
+                                          <th>Organizations</th>
+                                          <td>{{ user.profile.organizations }}</td>
+                                        </tr>
+                                        <tr>
+                                          <th>Peers</th>
+                                          <td>{{ user.profile.peers }}</td>
+                                        </tr>
+                                        <tr>
+                                          <th>UAVs</th>
+                                          <td>{{ user.profile.uavs }}</td>
+                                        </tr>
+                                        <tr>
+                                          <th>Channels</th>
+                                          <td>{{ user.profile.channels }}</td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-bar me-1"></i>
+                                        Authentication information
+                                    </div>
+                                    <div class="card-body">
+                                        <table id="datatablesSimple">
+                                            <thead>
+                                                <tr>
+                                                    <th>Auth name</th>
+                                                    <th>MSP ID</th>
+                                                    <th>Crypto Path</th>
+                                                    <th>Cert Path</th>
+                                                    <th>Key Path</th>
+                                                    <th>TLS Cert Path</th>
+                                                    <th>Peer Endpoint</th>
+                                                    <th>Gateway Peer</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Auth name</th>
+                                                    <th>MSP ID</th>
+                                                    <th>Crypto Path</th>
+                                                    <th>Cert Path</th>
+                                                    <th>Key Path</th>
+                                                    <th>TLS Cert Path</th>
+                                                    <th>Peer Endpoint</th>
+                                                    <th>Gateway Peer</th>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                                {% for auth_peer in auth_peers %}
+                                                    <tr>
+                                                        <td>{{ auth_peer.auth_name }}</td>
+                                                        <td>{{ auth_peer.mspid }}</td>
+                                                        <td>{{ auth_peer.cryptopath }}</td>
+                                                        <td>{{ auth_peer.certpath }}</td>
+                                                        <td>{{ auth_peer.keypath }}</td>
+                                                        <td>{{ auth_peer.tlscertpath }}</td>
+                                                        <td>{{ auth_peer.peerendpoint }}</td>
+                                                        <td>{{ auth_peer.gatewaypeer }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            </div>
+                        <div class="row">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    Connected Peers
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        {% for auth_peer in auth_peers %}
+                                            <div class="col-xl-3 col-md-6">
+                                                <div class="card text-white mb-4" id="card-{{ auth_peer.id }}"> <!-- id 속성을 추가합니다. -->
+                                                    <div class="card-body">{{ auth_peer.auth_name }}</div>
+                                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                                        <a class="small text-white stretched-link" href="#exampleModal" data-bs-toggle="modal" data-bs-target="#exampleModal{{ auth_peer.id }}">View Details</a>
+                                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                
+                                            <!-- Modal -->
+                                            
+                                            <div class="modal fade" id="exampleModal{{ auth_peer.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">{{ auth_peer.userprofile.user.username }} - Authentication information</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form id="edit-form-{{ auth_peer.id }}" style="display: none;"> <!-- 폼을 숨김 -->
+                                                                <table id="table table-bordered" class="table table-bordered">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <th>Auth name</th>
+                                                                            <td><input type="text" name="auth_name" class="form-control" value="{{ auth_peer.auth_name }}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>MSP ID</th>
+                                                                            <td><input type="text" name="mspid" class="form-control" value="{{ auth_peer.mspid }}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Crypto Path</th>
+                                                                            <td><input type="text" name="cryptopath" class="form-control" value="{{ auth_peer.cryptopath }}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Cert Path</th>
+                                                                            <td><input type="text" name="certpath" class="form-control" value="{{ auth_peer.certpath }}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Key Path</th>
+                                                                            <td><input type="text" name="keypath" class="form-control" value="{{ auth_peer.keypath }}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>TLS Cert Path</th>
+                                                                            <td><input type="text" name="tlscertpath" class="form-control" value="{{ auth_peer.tlscertpath }}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Peer Endpoint</th>
+                                                                            <td><input type="text" name="peerendpoint" class="form-control" value="{{ auth_peer.peerendpoint }}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Gateway Peer</th>
+                                                                            <td><input type="text" name="gatewaypeer" class="form-control" value="{{ auth_peer.gatewaypeer }}"></td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </form> <!-- 폼 끝 -->
+                                                            <table id="table table-bordered" class="table table-bordered">
+                                                                <tbody id="view-table-{{ auth_peer.id }}"> <!-- 뷰 테이블에 ID 부여 -->
+                                                                    <tr>
+                                                                        <th>Auth Name</th>
+                                                                        <td>{{ auth_peer.auth_name }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>MSP ID</th>
+                                                                        <td>{{ auth_peer.mspid }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Crypto Path</th>
+                                                                        <td>{{ auth_peer.cryptopath }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Cert Path</th>
+                                                                        <td>{{ auth_peer.certpath }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Key Path</th>
+                                                                        <td>{{ auth_peer.keypath }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>TLS Cert Path</th>
+                                                                        <td>{{ auth_peer.tlscertpath }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Peer Endpoint</th>
+                                                                        <td>{{ auth_peer.peerendpoint }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Gateway Peer</th>
+                                                                        <td>{{ auth_peer.gatewaypeer }}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button type="button" class="btn btn-primary" id="edit-button-{{ auth_peer.id }}" onclick="editForm( {{ auth_peer.id }} )">Edit</button> <!-- 수정 버튼 추가 -->
+                                                            <button type="button" class="btn btn-primary" id="save-button-{{ auth_peer.id }}" onclick="submitForm( {{ auth_peer.id }} )" style="display: none;">Save changes</button> <!-- 저장 버튼을 숨김 -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; github@sh0116</div>
+                            <div>
+                                <a href="#">Beijing Institute of Technology 2023</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+                <!-- modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Modal Title</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          Here is the content of the modal.
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>    
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'js/scripts.js'%}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'assets/demo/chart-area-demo.js'%}"></script>
+        <script src="{% static 'assets/demo/chart-bar-demo.js'%}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+        <script src="{% static 'js/datatables-simple-demo.js'%}"></script>
+        {% block extra_js %}
+            <script>
+                document.addEventListener('DOMContentLoaded', initAuthentications);
+            </script>
+            <script id="auth_peer_ids" type="application/json">
+                [{% for auth_peer in auth_peers %}{{ auth_peer.id }}{% if not forloop.last %}, {% endif %}{% endfor %}]
+            </script>
+        {% endblock %}
+    </body>
+</html>
