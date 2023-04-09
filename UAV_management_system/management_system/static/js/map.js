@@ -15,7 +15,7 @@ function parseCoordinatesUAV(responseData) {
 
 async function fetchCoordinates() {
   try {
-    const response = await fetch('/client/');
+    const response = await fetch('/client_uav/');
     const data = await response.json();
     return data;
   } catch (error) {
@@ -26,30 +26,41 @@ async function fetchCoordinates() {
 
 async function addMarkersFromData(map) {
   try {
+    // 기존 마커 삭제
+    if (window.currentMarkers.length > 0) {
+      for (let i = 0; i < window.currentMarkers.length; i++) {
+        window.currentMarkers[i].remove();
+      }
+      window.currentMarkers = [];
+    }
+
     const data = await fetchCoordinates();
 
     // JSON 데이터에서 마커 위치 추출
     const markerData = data.map(item => {
       return {
         position: [parseFloat(item.fields.longitude), parseFloat(item.fields.latitude)],
-        title: item.fields.uav_manager 
+        title: item.fields.uav_manager
       };
     });
 
     // 각 위치에 마커 추가
-    for (const data  of markerData) {
+    for (const data of markerData) {
       const iconElement = document.createElement('img');
       iconElement.src = "https://seokhyeon-asset.s3.ap-northeast-2.amazonaws.com/UAV-Managemet-System/uav-icon__black.png";
       const popup = new maplibregl.Popup({
         closeButton: false,
         closeOnClick: false,
-        offset: 25 
+        offset: 25
       }).setHTML(`<h3>${data.title}</h3>`);
 
       const marker = new maplibregl.Marker({ element: iconElement })
         .setLngLat(data.position)
-        .setPopup(popup) 
+        .setPopup(popup)
         .addTo(map);
+
+      // 마커를 window.currentMarkers 배열에 추가
+      window.currentMarkers.push(marker);
     }
   } catch (error) {
     console.error('Error adding markers:', error);

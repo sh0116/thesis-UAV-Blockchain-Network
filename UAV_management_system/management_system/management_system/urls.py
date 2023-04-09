@@ -22,11 +22,14 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('login/', views.UAV_LoginView.as_view(), name='login'),
+    path('logout/', views.logout_view, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('history/', views.history, name='history'),
     path('tracker/', views.tracker, name='tracker'),
     path('mission/<str:mission_name>/', views.mission, name='mission'),
     path('pages/', views.index, name='pages'),
-    path('client/', views.client, name='client'),
+    path('client_uav/', views.client_uav, name='client_uav'),
+    path('client_hlf/<int:auth_peer_id>/', views.client_hlf, name='client_hlf'),
+    path('updateAuthenticationPeer/<int:auth_peer_id>/', views.updateAuthenticationPeer, name='updateAuthenticationPeer'),
 ]
 
