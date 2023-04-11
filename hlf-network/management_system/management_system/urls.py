@@ -26,10 +26,12 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('history/', views.history, name='history'),
     path('tracker/', views.tracker, name='tracker'),
-    path('mission/<str:mission_name>/', views.mission, name='mission'),
+    path('mission/', views.mission, name='mission'),
+    path('task/', views.task, name='task'),
     path('pages/', views.index, name='pages'),
     path('client_uav/', views.client_uav, name='client_uav'),
     path('client_hlf/<int:auth_peer_id>/', views.client_hlf, name='client_hlf'),
+    path('client_hlf_getAllMission/', views.client_hlf_getAllMission, name='client_hlf_getAllMission'),
     path('updateAuthenticationPeer/<int:auth_peer_id>/', views.updateAuthenticationPeer, name='updateAuthenticationPeer'),
 ]
 

@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 from django.contrib.auth.models import User
-from .models import UserProfile, AuthenticationPeer
+from .models import UserProfile, AuthenticationPeer, Mission, Task
 import json, os, requests
 
 
@@ -71,9 +71,13 @@ def updateAuthenticationPeer(request, auth_peer_id):
 def index(request):
     user_profile = UserProfile.objects.get(user=request.user)
     auth_peers = AuthenticationPeer.objects.filter(userprofile=user_profile)
+    missions = Mission.objects.order_by('created_at')
+    tasks = Task.objects.order_by('created_at')
     context = {
         'user': request.user,
-        'auth_peers': auth_peers
+        'auth_peers': auth_peers,
+        'missions': missions, 
+        'tasks': tasks
         }
     return render(request, 'index.html', context)
 
@@ -102,12 +106,6 @@ def client_hlf(request, auth_peer_id):
             'tlsCertPath': auth_peer.tlscertpath,
             'peerEndpoint': auth_peer.peerendpoint,
             'gatewayPeer': auth_peer.gatewaypeer,
-        },
-        "asset" : {
-            "ID":"",
-            "Status":"",
-            "Latitude":"",
-            "Longitude":""
         }
     }
     response = requests.get(url, data=json.dumps(requests_data))
@@ -115,7 +113,32 @@ def client_hlf(request, auth_peer_id):
         return HttpResponse(response.status_code, content_type='application/json')
     else:
         return HttpResponse(response.status_code, content_type='application/json')
-""
+
+@login_required(login_url='/login/')
+def client_hlf_getAllMission(request):
+    url = "http://192.168.72.128:3030/getAllMissions"
+    auth_peers = AuthenticationPeer.objects.all()
+
+    for auth_peer in auth_peers:
+        
+        requests_data = {
+            "auth" : {
+                'mspID': auth_peer.mspid,
+                'cryptoPath': auth_peer.cryptopath,
+                'certPath': auth_peer.certpath,
+                'keyPath': auth_peer.keypath,
+                'tlsCertPath': auth_peer.tlscertpath,
+                'peerEndpoint': auth_peer.peerendpoint,
+                'gatewayPeer': auth_peer.gatewaypeer,
+            }
+        }
+        response = requests.get(url, json=requests_data)
+        if response.status_code == 200:
+            return HttpResponse(json.dumps(response.json()), content_type='application/json')
+
+    return HttpResponse(response.status_code, content_type='application/json')
+
+
 @login_required(login_url='/login/')
 def history(request):
     return render(request, 'history.html')
@@ -125,5 +148,9 @@ def tracker(request):
     return render(request, 'tracker.html')
 
 @login_required(login_url='/login/')
-def mission(request, mission_name):
+def mission(request):
     return render(request, "mission.html")
+
+@login_required(login_url='/login/')
+def task(request):
+    return render(request, "task.html")

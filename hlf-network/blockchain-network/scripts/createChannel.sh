@@ -53,7 +53,7 @@ createChannel() {
 
 # joinChannel ORG
 joinChannel() {
-  FABRIC_CFG_PATH=$PWD/../config/
+  FABRIC_CFG_PATH=$PWD/../../../config
   ORG=$1
   setGlobals $ORG
 	local rc=1
@@ -83,7 +83,7 @@ FABRIC_CFG_PATH=${PWD}/configtx
 infoln "Generating channel genesis block '${CHANNEL_NAME}.block'"
 createChannelGenesisBlock
 
-FABRIC_CFG_PATH=$PWD/../config/
+FABRIC_CFG_PATH=$PWD/../../../config
 BLOCKFILE="./channel-artifacts/${CHANNEL_NAME}.block"
 
 ## Create channel

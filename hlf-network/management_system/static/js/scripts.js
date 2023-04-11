@@ -23,7 +23,98 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     }
 
+    fetchMissions();
 });
+
+async function fetchMissions() {
+    try {
+        var request = new XMLHttpRequest();
+        request.open('get', '/client_hlf_getAllMission/', true); 
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+        request.setRequestHeader('X-CSRFToken', getCsrfToken());
+
+        const response = await fetch('/client_hlf_getAllMission/');
+        if (response.ok) {
+            const missions = await response.json();
+            displayMissions(missions);
+        } else {
+            console.error('Error fetching missions:', response);
+        }
+    } catch (error) {
+        console.error('Error in fetchMissions():', error);
+    }
+}
+
+function updateCurrentSlide(slideIndex) {
+    const currentSlideElement = document.getElementById('current-slide');
+    currentSlideElement.textContent = slideIndex ;
+}
+
+function displayMissions(missions) {
+    const missionsContainer = document.getElementById('missions-container');
+    const indicatorsContainer = document.getElementById('missions-indicators');
+
+    const missionCount = missions.length;
+    const missionCountElement = document.getElementById('mission-count');
+    missionCountElement.textContent = missionCount;
+
+
+    missions.forEach((mission, index) => {
+        const indicator = document.createElement('button');
+        indicator.type = 'button';
+        indicator.setAttribute('data-bs-target', '#missionsCarousel');
+        indicator.setAttribute('data-bs-slide-to', index);
+        indicator.classList.add('carousel-indicator');
+        if (index === 0) {
+            indicator.classList.add('active');
+        }
+        indicatorsContainer.appendChild(indicator);
+
+        // Create carousel item
+        const carouselItem = document.createElement('div');
+        carouselItem.classList.add('carousel-item');
+        carouselItem.setAttribute('data-slide-index', index);
+        carouselItem.style.textAlign = 'center';
+        
+        if (index === 0) {
+            carouselItem.classList.add('active');
+        }
+
+        const missionCard = document.createElement('div');
+        missionCard.classList.add('card', 'shadow', 'h-100', 'py-2');
+
+        const missionCardBody = document.createElement('div');
+        missionCardBody.classList.add('card-body');
+
+        const missionTitle = document.createElement('h5');
+        missionTitle.classList.add('card-title');
+        missionTitle.textContent = mission.id;
+
+        const missionComments = document.createElement('p');
+        missionComments.classList.add('card-text');
+        missionComments.textContent = mission.comments;
+
+        const missionAssetIDs = document.createElement('ul');
+        mission.asset_ids.forEach(assetID => {
+            const assetIDItem = document.createElement('li');
+            assetIDItem.textContent = assetID;
+            missionAssetIDs.appendChild(assetIDItem);
+        });
+
+        missionCardBody.appendChild(missionTitle);
+        missionCardBody.appendChild(missionComments);
+        missionCardBody.appendChild(missionAssetIDs);
+        missionCard.appendChild(missionCardBody);
+        carouselItem.appendChild(missionCard);
+        missionsContainer.appendChild(carouselItem);
+    });
+    const missionsCarousel = document.getElementById('missionsCarousel');
+    missionsCarousel.addEventListener('slid.bs.carousel', (event) => {
+        updateCurrentSlide(event.relatedTarget.dataset.slideIndex);
+    });
+}
+
+
 
 function editForm(id) {
     document.getElementById('view-table-' + id).style.display = 'none';
