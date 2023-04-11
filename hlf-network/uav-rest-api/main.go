@@ -7,7 +7,6 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.GET("/authenticate", web.authenticate)
 	// REST API endpoints
 	router.GET("/connect", web.ConnectHandler)
 	router.GET("/getAllTasks", web.GetAllTasksHandler)

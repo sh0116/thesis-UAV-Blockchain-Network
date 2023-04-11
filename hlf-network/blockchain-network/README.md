@@ -12,7 +12,7 @@ First, ensure that the peer binaries are on your path, and the Fabric Config pat
 
 ```bash
  export PATH=$PATH:$(realpath ../bin)
- export FABRIC_CFG_PATH=$(realpath ../config)
+ export FABRIC_CFG_PATH=$(realpath ../../../config)
 ```
 
 You can then set up the environment variables for each organization. The `./setOrgEnv.sh` command is designed to be run as follows.
