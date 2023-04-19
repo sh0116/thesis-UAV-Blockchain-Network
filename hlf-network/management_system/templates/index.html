@@ -21,7 +21,7 @@
         <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
         <style>
-            #map { height: 36vh; }
+            #map { height: 39vh; }
             .custom-card-body {
                 padding: 1rem;
             }
@@ -167,22 +167,48 @@
                                             <p class="card-text">{{ user.profile.organizations }}</p>
                                         </div>
                                         <div class="mb-3">
-                                            <span class="fw-bold">Peers:</span>
-                                            <p class="card-text">{{ user.profile.peers }}</p>
+                                            <span class="fw-bold">region:</span>
+                                            <p class="card-text">{{ user.profile.region }}</p>
                                         </div>
                                         <div class="mb-3">
-                                            <span class="fw-bold">UAVs:</span>
-                                            <p class="card-text">{{ user.profile.uavs }}</p>
+                                            <span class="fw-bold">User Code:</span>
+                                            <p class="card-text">{{ user.profile.user_code }}</p>
                                         </div>
-                                        <div class="mb-3">
-                                            <span class="fw-bold">Channels:</span>
-                                            <p class="card-text">{{ user.profile.channels }}</p>
+                                        <button type="submit" class="btn btn-primary mx-auto d-block" data-bs-toggle="modal" data-bs-target="#editUserProfileModal">
+                                            Update Information
+                                        </button>
+                                    </div>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="editUserProfileModal" tabindex="-1" aria-labelledby="editUserProfileModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editUserProfileModalLabel">Edit UserProfile</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form method="post" action="{% url 'update_userprofile' %}">
+                                                    {% csrf_token %}
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label for="organizations" class="form-label">Organizations</label>
+                                                            <input type="text" class="form-control" id="organizations" name="organizations" value="{{ userprofile.organizations }}">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="region" class="form-label">Region</label>
+                                                            <input type="text" class="form-control" id="region" name="region" value="{{ userprofile.region }}">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="user_code" class="form-label">User Code</label>
+                                                            <input type="text" class="form-control" id="user_code" name="user_code" value="{{ userprofile.user_code }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                         </div>
-                                        <form method="POST" enctype="multipart/form-data">
-                                            {% csrf_token %}
-                                            {{ form.as_p }}
-                                            <button type="submit" class="btn btn-primary mx-auto d-block">Update Information</button>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -191,7 +217,6 @@
                                     <div class="card-header">
                                         <i class="fas fa-chart-bar me-1"></i>
                                         Missions Infomation
-                                        <span id="current-slide" class="badge bg-primary"></span>/<span id="mission-count" class="badge bg-primary"></span>
                                     </div>
                                     <div id="missionsCarousel" class="carousel slide d-flex align-items-center" data-bs-ride="carousel">
                                         <div class="carousel-indicators" id="missions-indicators" ></div>
@@ -205,10 +230,14 @@
                                             <span class="visually-hidden">Next</span>
                                         </button>
                                     </div>
+                                    <div style="text-align: center;">
+                                        <span id="current-slide" class="badge bg-primary"></span> - <span id="mission-count" class="badge bg-primary"></span>
+                                    </div>
+                                    
                                     <form method="POST" enctype="multipart/form-data">
                                         {% csrf_token %}
                                         {{ form.as_p }}
-                                        <button type="submit" class="mx-3 my-3 btn btn-primary mx-auto d-block">Update Information</button>
+                                        <button type="submit" class="mx-3 my-3 btn btn-primary mx-auto d-block">Update Missions</button>
                                     </form>
                                 </div>
                             </div>
@@ -221,7 +250,6 @@
                                     <div id="map" />
                                 </div>
                             </div>
-
                         </div>
 
                         <div class="row">
@@ -253,11 +281,11 @@
                                             <i class="fas fa-plus"></i>
                                         </button>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body" style="height: 300px; overflow-y: auto;">
                                         <div class="row">
                                             {% for auth_peer in auth_peers %}
-                                                <div class="col-xl-3 col-md-6">
-                                                    <div class="card text-white mb-4" id="card-{{ auth_peer.id }}"> <!-- id 속성을 추가합니다. -->
+                                                <div class="col-xl-6 col-md-6">
+                                                    <div class="card text-white mb-4" id="card-{{ auth_peer.id }}">
                                                         <div class="card-body">{{ auth_peer.auth_name }}</div>
                                                         <div class="card-footer d-flex align-items-center justify-content-between">
                                                             <a class="small text-white stretched-link" href="#exampleModal" data-bs-toggle="modal" data-bs-target="#exampleModal{{ auth_peer.id }}">View Details</a>
@@ -367,8 +395,8 @@
                             <div class="col-xl-8">
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <i class="fas fa-user me-1"></i>
-                                        User Information
+                                        <i class="fas fa-chart-bar me-1"></i>
+                                        Transaction Information
                                     </div>
                                     <div class="card-body">
                                         <div class="container">
@@ -385,20 +413,12 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                {% for mission in missions %}
+                                                                {% for mt in mission_task %}
                                                                     <tr>
-                                                                        <td>Mission</td>
-                                                                        <td>{{ mission.mission_name }}</td>
-                                                                        <td>{{ mission.mission_comment }}</td>
-                                                                        <td>{{ mission.created_at }}</td>
-                                                                    </tr>
-                                                                {% endfor %}
-                                                                {% for task in tasks %}
-                                                                    <tr>
-                                                                        <td>Task</td>
-                                                                        <td>{{ task.task_name }}</td>
-                                                                        <td>{{ task.task_comment }}</td>
-                                                                        <td>{{ task.created_at }}</td>
+                                                                        <td>{{ mt.mission_task }}</td>
+                                                                        <td>{{ mt.mission_task_name }}</td>
+                                                                        <td>{{ mt.mission_task_coment }}</td>
+                                                                        <td>{{ mt.created_at }}</td>
                                                                     </tr>
                                                                 {% endfor %}
                                                             </tbody>

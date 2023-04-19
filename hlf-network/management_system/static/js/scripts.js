@@ -23,20 +23,140 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     }
 
-    fetchMissions();
+    fetchdisplayMissions();
 });
 
-async function fetchMissions() {
+async function fetchMissions(authId, MissionFuction) {
     try {
-        var request = new XMLHttpRequest();
-        request.open('get', '/client_hlf_getAllMission/', true); 
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-        request.setRequestHeader('X-CSRFToken', getCsrfToken());
+        const response = await fetch(`/hlf_getAllMission/${authId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken(),
+            },
+        });
 
-        const response = await fetch('/client_hlf_getAllMission/');
         if (response.ok) {
             const missions = await response.json();
-            displayMissions(missions);
+            displayMissions(missions, MissionFuction);
+        } else {
+            console.error('Error fetching missions:', response);
+        }
+    } catch (error) {
+        console.error('Error in fetchMissions():', error);
+    }
+}
+
+function displayMissions(missions, MissionFuction) {
+    const missionCardsContainer = document.getElementById('mission-cards').querySelector('.row');
+
+    missions.forEach(mission => {
+        const colDiv = document.createElement('div');
+        colDiv.classList.add('col-xl-12', 'col-md-6');
+
+        const cardDiv = document.createElement('div');
+        cardDiv.classList.add('card', 'text-white', 'mb-4', 'bg-primary');
+        cardDiv.id = `card-${mission.id}`;
+
+        const cardBodyDiv = document.createElement('div');
+        cardBodyDiv.classList.add('card-body');
+
+        const cardTitle = document.createElement('h5');
+        cardTitle.classList.add('card-title');
+        cardTitle.textContent = mission.id;
+
+        const cardText = document.createElement('p');
+        cardText.classList.add('card-text');
+        cardText.textContent = mission.comments;
+
+        const cardFooterDiv = document.createElement('div');
+        cardFooterDiv.classList.add('card-footer', 'd-flex', 'align-items-center', 'justify-content-between');
+
+        const footerText = document.createElement('span')
+
+        const checkMark = document.createElement('i');
+        checkMark.classList.add('fas', 'fa-check', 'text-success', 'd-none');
+        checkMark.style.position = 'absolute';
+        checkMark.style.top = '10px';
+        checkMark.style.right = '10px';
+        
+        if (MissionFuction==="select") {
+            cardDiv.onclick = () => MissionselectMissionSelCard(`card-${mission.id}`);
+        } else if (MissionFuction==="delete"){
+            cardDiv.onclick = () => MissionselectMissionDelCard(`card-${mission.id}`);
+        }
+        
+
+
+        cardBodyDiv.appendChild(checkMark);
+        cardBodyDiv.appendChild(cardTitle);
+        cardBodyDiv.appendChild(cardText);
+        cardFooterDiv.appendChild(footerText);
+        cardDiv.appendChild(cardBodyDiv);
+        cardDiv.appendChild(cardFooterDiv);
+        colDiv.appendChild(cardDiv);
+        missionCardsContainer.appendChild(colDiv);
+    });
+}
+
+function deselectAllCards() {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.classList.remove('border-warning');
+        const checkMark = card.querySelector('.fa-check');
+        if (checkMark) {
+            checkMark.classList.add('d-none');
+        }
+    });
+}
+
+function MissionselectMissionSelCard(cardId) {
+    const card = document.getElementById(cardId);
+    const checkMark = card.querySelector('.fa-check');
+
+    if (card.classList.contains('border-warning')) {
+        card.classList.remove('border-warning');
+        checkMark.classList.add('d-none');
+    } else {
+        deselectAllCards();
+        card.classList.add('border-warning');
+        checkMark.classList.remove('d-none');
+
+        selectedMissionId = cardId.replace('card-', '');
+        document.getElementById('task-container').style.display = 'block';
+    }
+}
+
+function MissionselectMissionDelCard(cardId) {
+    const card = document.getElementById(cardId);
+    const checkMark = card.querySelector('.fa-check');
+
+    if (card.classList.contains('border-warning')) {
+        card.classList.remove('border-warning');
+        checkMark.classList.add('d-none');
+    } else {
+        deselectAllCards();
+        card.classList.add('border-warning');
+        checkMark.classList.remove('d-none');
+
+        selectedMissionId = cardId.replace('card-', '');
+        $('#deleteMissionModal').modal('show');
+    }
+}
+
+async function fetchdisplayMissions() {
+    try {
+        const response = await fetch(`/hlf_getAllMission/0/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken(),
+            },
+        });
+
+        if (response.ok) {
+            const missions = await response.json();
+            displayHomeMissions(missions);
         } else {
             console.error('Error fetching missions:', response);
         }
@@ -50,7 +170,7 @@ function updateCurrentSlide(slideIndex) {
     currentSlideElement.textContent = slideIndex ;
 }
 
-function displayMissions(missions) {
+function displayHomeMissions(missions) {
     const missionsContainer = document.getElementById('missions-container');
     const indicatorsContainer = document.getElementById('missions-indicators');
 
@@ -113,8 +233,6 @@ function displayMissions(missions) {
         updateCurrentSlide(event.relatedTarget.dataset.slideIndex);
     });
 }
-
-
 
 function editForm(id) {
     document.getElementById('view-table-' + id).style.display = 'none';
@@ -179,15 +297,16 @@ async function submitForm(id) {
 
 function checkAuthentication(auth_peer_id) {
     var request = new XMLHttpRequest();
-    request.open('get', '/client_hlf/' + auth_peer_id + '/', true); // URL을 기반으로 POST 요청을 엽니다.
+    request.open('get', '/hlf_Connect/' + auth_peer_id + '/', true); // URL을 기반으로 POST 요청을 엽니다.
     request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
     request.setRequestHeader('X-CSRFToken', getCsrfToken());
 
     request.onload = function () {
         var response = JSON.parse(request.responseText);
         var card = document.getElementById("card-" + auth_peer_id);
-        console.info(response);
-        if (response === 200) { // 성공 시에는 bg-primary 클래스를 추가하고 bg-error 클래스를 제거합니다.
+        console.info("response");
+        console.info(request);
+        if (response !== 500) { // 성공 시에는 bg-primary 클래스를 추가하고 bg-error 클래스를 제거합니다.
             card.classList.add('bg-primary');
             card.classList.remove('bg-danger');
         } else { // 실패 시에는 bg-error 클래스를 추가하고 bg-primary 클래스를 제거합니다.
@@ -213,3 +332,159 @@ function initAuthentications() {
     const auth_peer_ids = JSON.parse(document.getElementById('auth_peer_ids').textContent);
     checkAllAuthentications(auth_peer_ids);
 }
+
+function MissionselectPeerCard(cardId, authId, MissionFuction) {
+    // Clear the previous selection, if any
+    const selectedCards = document.querySelectorAll('.card.border-success');
+    for (let i = 0; i < selectedCards.length; i++) {
+        selectedCards[i].classList.remove('border-success');
+        const checkId = selectedCards[i].id.replace('card', 'check');
+        document.getElementById(checkId).classList.add('d-none');
+    }
+
+    // Set the new selection
+    const card = document.getElementById(cardId, authId);
+    card.classList.add('border-success');
+
+    const checkId = cardId.replace('card', 'check');
+    document.getElementById(checkId).classList.remove('d-none');
+    document.getElementById('lower-row').style.display = 'flex';
+
+    fetchMissions(authId, MissionFuction);
+}
+
+async function submitMission() {
+    const missionId = document.getElementById('mission-id').value;
+    const missionComment = document.getElementById('mission-comment').value;
+
+    const selectedCard = document.querySelector('.card.border-success');
+    const authId = selectedCard.id.replace('card-', '');
+
+    const postData = {
+        Mission_Asset: {
+            ID: missionId,
+            Comments: missionComment,
+            AssetIDs: '',
+        },
+    };;
+
+    fetch(`/hlf_createMission/${authId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken(),
+        },
+        body: JSON.stringify(postData),
+    })
+    .then((response) => {
+        if (response.status!==500) {
+            console.log('Mission submitted successfully', response);
+            window.location.href = '/';
+        } else {
+            console.error('Error submitting mission:', response);
+            alert('Failed to submit the mission. Please try again.');
+            window.location.href = '/';
+        }
+    })
+    .catch((error) => {
+        console.error('Error in submitMission():', error);
+        alert('Failed to submit the mission. Please try again.');
+        window.location.href = '/';
+    });
+}
+
+async function deleteMission() {
+    if (!selectedMissionId) {
+        alert('Please select a mission to delete.');
+        return;
+    }
+    const authselectedCard = document.querySelector('.card.border-success');
+    const authId = authselectedCard.id.replace('card-', '');
+    const postData = {
+        Mission_Asset: {
+            ID: selectedMissionId,
+        },
+    };;
+    fetch(`/hlf_deleteMission/${authId}/`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken(),
+        },
+        body: JSON.stringify(postData),
+    })
+    .then((response) => {
+        if (response.status !== 500) {
+            console.log('Mission deleted successfully', response);
+            // Redirect to the home page after successful deletion
+            window.location.href = '/';
+        } else {
+            console.error('Error deleting mission:', response);
+            alert('Failed to delete the mission. Please try again.');
+            // Redirect to the home page after showing the failure alert
+            window.location.href = '/';
+        }
+    })
+    .catch((error) => {
+        console.error('Error in deleteMission():', error);
+        alert('Failed to delete the mission. Please try again.');
+        // Redirect to the home page after showing the failure alert
+        window.location.href = '/';
+    });
+}
+
+async function createTask() {
+    // Get latitude, longitude, and UAV ID from the form inputs
+    const task_id = document.getElementById('task-id-input').value;
+    const latitude = document.getElementById('latitude-input').value;
+    const longitude = document.getElementById('longitude-input').value;
+    const uavName = document.getElementById('inputGroupSelect01').options[document.getElementById('inputGroupSelect01').selectedIndex].text;
+
+    if (!selectedMissionId) {
+        alert('Please select a mission to delete.');
+        return;
+    }
+    const authselectedCard = document.querySelector('.card.border-success');
+    const authId = authselectedCard.id.replace('card-', '');
+
+
+    const postData = {
+        Task_Asset: {
+            ID          : task_id,
+            Name        : uavName,
+            task_id     : "",
+            mission_id  : selectedMissionId,
+            Latitude    : latitude,
+            Longitude   : longitude,
+            Comments    : ""
+        },
+    };;
+
+    // Send the POST request to the lf_createTask endpoint
+    fetch(`/hlf_createTask/${authId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken(), // Assuming you have a getCsrfToken() function to get the CSRF token
+        },
+        body: JSON.stringify(postData),
+    })
+    .then((response) => {
+        if (response !== 500) {
+            console.log('Task Create successfully', response);
+            // Redirect to the home page after successful deletion
+            window.location.href = '/';
+        } else {
+            console.error('Error Create Task:', response);
+            alert('Failed to Create the Task. Please try again.');
+            // Redirect to the home page after showing the failure alert
+            window.location.href = '/';
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('Failed to Create the Task. Please try again.');
+        // Redirect to the home page after showing the failure alert
+        window.location.href = '/';
+    });
+};
