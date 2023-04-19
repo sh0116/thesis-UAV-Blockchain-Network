@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'posts',
     'corsheaders',
+    'sslserver',
 ]
 
 MIDDLEWARE = [

@@ -11,11 +11,11 @@ services:
       - POSTGRES_PASSWORD=postgres
   ums:
     build: .
-    command: python /code/manage.py runserver 0.0.0.0:80
+    command: python  /code/manage.py runsslserver 0.0.0.0:443 --cert cert.pem --key key.pem
     volumes:
       - .:/code
     ports:
-      - 80:80
+      - 443:443
     environment:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres

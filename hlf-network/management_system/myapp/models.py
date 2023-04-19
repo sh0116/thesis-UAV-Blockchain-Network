@@ -18,9 +18,8 @@ def keypath_file_upload_to(instance, filename):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', blank=True)
     organizations = models.TextField(blank=True)
-    peers = models.TextField(blank=True)
-    uavs = models.TextField(blank=True)
-    channels = models.TextField(blank=True)
+    region = models.TextField(blank=True)
+    user_code = models.TextField(blank=True)
 
     def __str__(self):
         return self.user.username
@@ -29,7 +28,7 @@ class AuthenticationPeer(models.Model):
     userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='Authprofile', blank=True)
     auth_name = models.TextField(blank=True)
     mspid = models.TextField(blank=True)
-    cryptopath = models.TextField(blank=True, default='../management_system/media/')
+    cryptopath = models.TextField(blank=True, default='../management_system')
     peerendpoint = models.TextField(blank=True)
     gatewaypeer = models.TextField(blank=True)
     
@@ -44,19 +43,24 @@ class AuthenticationPeer(models.Model):
     def __str__(self):
         return self.userprofile.user.username
 
-class Mission(models.Model):
-    admin_user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='mission', blank=True)
-    mission_name = models.CharField(max_length=255, unique=True, primary_key=True)
-    mission_coment = models.TextField(blank=True)
+    def save(self, *args, **kwargs):
+
+        if self.certpath_file:
+            self.certpath = self.cryptopath+self.certpath_file.url
+        if self.tlscertpath_file:
+            self.tlscertpath = self.cryptopath+self.tlscertpath_file.url
+        if self.keypath_file:
+            self.keypath = self.cryptopath+'/'.join(self.keypath_file.url.split("/")[:-1])
+
+        super().save(*args, **kwargs)
+
+
+
+class MissionAndTask(models.Model):
+    admin_user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='mission_task', blank=True)
+    mission_task = models.TextField(blank=True)
+    mission_task_name = models.TextField(blank=True)
+    mission_task_coment = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     def __str__(self):
-        return self.mission_name
-
-class Task(models.Model):
-    mission = models.ForeignKey(Mission, on_delete=models.CASCADE, to_field='mission_name', related_name='task', blank=True)
-    task_name = models.CharField(max_length=100, primary_key=True)
-    task_coment = models.TextField(blank=True)
-    created_at = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return f"{self.mission} - {self.task_name}" 
+        return f"{self.mission_task} - {self.mission_task_name}" 
