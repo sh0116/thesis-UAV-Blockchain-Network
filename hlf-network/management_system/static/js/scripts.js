@@ -12,17 +12,12 @@ window.addEventListener('DOMContentLoaded', event => {
     // Toggle the side navigation
     const sidebarToggle = document.body.querySelector('#sidebarToggle');
     if (sidebarToggle) {
-        // Uncomment Below to persist sidebar toggle between refreshes
-        // if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
-        //     document.body.classList.toggle('sb-sidenav-toggled');
-        // }
         sidebarToggle.addEventListener('click', event => {
             event.preventDefault();
             document.body.classList.toggle('sb-sidenav-toggled');
             localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
         });
     }
-
     fetchdisplayMissions();
 });
 
@@ -488,3 +483,192 @@ async function createTask() {
         window.location.href = '/';
     });
 };
+
+
+function createMissionAndTaskCard() {
+    // Get mission_task data from the script element
+    const missionTaskDataElement = document.getElementById("mission_task_data");
+    const missionTaskData = JSON.parse(missionTaskDataElement.textContent);
+
+    const missionCardsContainer = document.querySelector("#mission-task-cards .row");
+
+    for (const missionAndTaskSerialized of missionTaskData) {
+        const missionAndTask = missionAndTaskSerialized.fields; // Access the fields property
+        const card = document.createElement("div");
+        card.className = `card mb-3 text-white ${(missionAndTask.mission_task === 'TASK') ? 'bg-success' : 'bg-primary'}`;
+        card.id = `card-${missionAndTaskSerialized.pk}`; // Set the card ID based on the missionAndTask object
+
+        const cardBody = document.createElement("div");
+        cardBody.className = "card-body";
+
+        const cardTitle = document.createElement("h5");
+        cardTitle.className = "card-title";
+        cardTitle.textContent = missionAndTask.mission_task_name;
+
+        const cardSubtitle = document.createElement("h6");
+        cardSubtitle.className = "card-subtitle mb-2";
+        cardSubtitle.textContent = missionAndTask.created_at;
+
+        const cardText = document.createElement("p");
+        cardText.className = "card-text";
+        cardText.textContent = missionAndTask.mission_task_comment;
+
+        cardBody.appendChild(cardTitle);
+        cardBody.appendChild(cardSubtitle);
+        cardBody.appendChild(cardText);
+        card.appendChild(cardBody);
+
+
+        card.addEventListener("click", () => {
+            selectCard(card);
+            choiceSearchMissiorTask(cardTitle.textContent);
+        });
+
+        missionCardsContainer.appendChild(card);
+    }
+}
+
+function selectCard(card) {
+    // Deselect any previously selected cards
+    const selectedCards = document.querySelectorAll(".card-selected");
+    for (const selectedCard of selectedCards) {
+        selectedCard.classList.remove("card-selected");
+        selectedCard.style.borderWidth = '1px';
+        selectedCard.style.borderColor = 'transparent';
+    }
+
+    // Select the clicked card
+    card.classList.add("card-selected");
+    card.style.borderWidth = '9px';
+    card.style.borderColor = 'yellow';
+}
+
+function choiceSearchMissiorTask(cardTextContent) {
+    const authselectedCard = document.querySelector('.card.border-success');
+    const authId = authselectedCard.id.replace('card-', '');
+
+    fetch(`/hlf_getHistory/${authId}/${cardTextContent}/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken(), // Assuming you have a getCsrfToken() function to get the CSRF token
+        },
+    })
+    .then((response) => {
+        if (response.status !== 500) {
+            return response.json(); // Parse the JSON response
+        } else {
+            throw new Error('Error Create Task:', response);
+        }
+    })
+    .then((responseData) => {
+        console.log('Data fetched successfully', responseData);
+        displayTableBasedOnData(responseData); // Call the function to show the appropriate table
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('Failed to Create the Task. Please try again.');
+        // Redirect to the home page after showing the failure alert
+        //window.location.href = '/';
+    });
+}
+
+function searchMissiorTask() {
+    const missionTaskIdInput = document.getElementById("mission-task-id");
+    const cardTextContent = missionTaskIdInput.value;
+
+    if (cardTextContent) {
+        const authselectedCard = document.querySelector('.card.border-success');
+        const authId = authselectedCard.id.replace('card-', '');
+
+        fetch(`/hlf_getHistory/${authId}/${cardTextContent}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken(), // Assuming you have a getCsrfToken() function to get the CSRF token
+            },
+        })
+        .then((response) => {
+            if (response.status !== 500) {
+                return response.json(); // Parse the JSON response
+            } else {
+                throw new Error('Error Create Task:', response);
+            }
+        })
+        .then((responseData) => {
+            console.log('Data fetched successfully', responseData);
+            displayTableBasedOnData(responseData); // Call the function to show the appropriate table
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Failed to Create the Task. Please try again.');
+        });
+    } else {
+        alert("Please enter a Mission or Task ID.");
+    }
+}
+
+function createTable(data, tableType) {
+    const tableContainer = document.getElementById(tableType === "mission" ? "mission-data-table" : "task-data-table");
+    const tableBody = tableContainer.querySelector("tbody");
+    tableBody.innerHTML = ""; // Clear the existing table rows
+
+    for (const item of data) {
+        const newRow = document.createElement("tr");
+
+        const nameCell = document.createElement("td");
+        nameCell.textContent = item.value.id;
+        newRow.appendChild(nameCell);
+
+        const commentCell = document.createElement("td");
+        commentCell.textContent = item.value.comments;
+        newRow.appendChild(commentCell);
+
+        if (tableType === "mission") {
+            const task_idsCell = document.createElement("td");
+            // Join the asset_ids with line breaks for better display
+            task_idsCell.innerHTML = item.value.asset_ids.join('<br>');
+            newRow.appendChild(task_idsCell);
+        } else {
+            // Add additional cells for Task table
+            const missionIdCell = document.createElement("td");
+            missionIdCell.textContent = item.value.missionid;
+            newRow.appendChild(missionIdCell);
+
+            const taskIdCell = document.createElement("td");
+            taskIdCell.textContent = item.value.taskid;
+            newRow.appendChild(taskIdCell);
+
+            const latitudeCell = document.createElement("td");
+            latitudeCell.textContent = item.value.latitude;
+            newRow.appendChild(latitudeCell);
+
+            const longitudeCell = document.createElement("td");
+            longitudeCell.textContent = item.value.longitude;
+            newRow.appendChild(longitudeCell);
+        }
+
+        tableBody.appendChild(newRow);
+    }
+}
+
+function displayTableBasedOnData(data) {
+    const tableRow = document.getElementById("table-row");
+    const missionTable = document.querySelector(".mission-table");
+    const taskTable = document.querySelector(".task-table");
+
+
+    if (data[0]?.value && data[0].value.hasOwnProperty("missionid")) {
+        // If the response data has a missionid property, it's a Task
+        missionTable.style.display = "none";
+        taskTable.style.display = "block";
+        createTable(data, "task");
+    } else {
+        // Otherwise, it's a Mission
+        missionTable.style.display = "block";
+        taskTable.style.display = "none";
+        createTable(data, "mission");
+    }
+    tableRow.style.display = "flex";
+}
+

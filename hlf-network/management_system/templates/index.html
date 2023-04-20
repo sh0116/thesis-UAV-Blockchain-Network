@@ -233,12 +233,7 @@
                                     <div style="text-align: center;">
                                         <span id="current-slide" class="badge bg-primary"></span> - <span id="mission-count" class="badge bg-primary"></span>
                                     </div>
-                                    
-                                    <form method="POST" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        {{ form.as_p }}
-                                        <button type="submit" class="mx-3 my-3 btn btn-primary mx-auto d-block">Update Missions</button>
-                                    </form>
+                                    <a type="submit" class="mx-3 my-3 btn btn-primary mx-auto d-block" href="{% url 'mission' %}">Update Missions</a>
                                 </div>
                             </div>
                             <div class="col-xl-8">

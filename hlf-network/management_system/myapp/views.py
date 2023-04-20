@@ -1,5 +1,5 @@
-import json
 from django.shortcuts import render, redirect
+from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout, authenticate, login
@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import UserProfile, AuthenticationPeer, MissionAndTask
 from .forms import UserProfileForm
-import requests
+import requests, json
 
 
 class UMS_LoginView(LoginView):
@@ -49,7 +49,18 @@ def dashboard(request):
 
 @login_required(login_url='/login/')
 def history(request):
-    return render(request, 'history.html')
+    user_profile = UserProfile.objects.get(user=request.user)
+    auth_peers = AuthenticationPeer.objects.filter(userprofile=user_profile)
+    mission_task = MissionAndTask.objects.order_by('created_at')
+
+    mission_task_json = serializers.serialize('json', mission_task)
+
+    context = {
+        'user': request.user,
+        'auth_peers': auth_peers,
+        'mission_task' : mission_task_json
+    }
+    return render(request, "history.html", context)
 
 @login_required(login_url='/login/')
 def tracker(request):
@@ -261,6 +272,46 @@ def hlf_createTask(request, auth_peer_id):
 
     return HttpResponse(status=405)
 
+@login_required(login_url='/login/')
+def hlf_getHistory(request, auth_peer_id, mission_task_id):
+    if request.method == 'GET':
+        client = HLF(host = request.get_host())
+        try:
+            auth_peer = client.get_auth_peer(auth_peer_id)
+            auth_data = client.get_auth_data(auth_peer)
+
+            if mission_task_id.split("-")[0] == "MISSION":
+                data = {
+                    'auth' : auth_data,
+                    "Mission_Asset" : {
+                        "ID":mission_task_id
+                    }
+                }
+                response = client.send_request('/GetMssionHistory', method='GET', data=data)
+            elif mission_task_id.split("-")[0] == "TASK":
+                data = {
+                    'auth' : auth_data,
+                    "Task_Asset" : {
+                        "ID":mission_task_id
+                    }
+                }
+                response = client.send_request('/GetTaskHistory', method='GET', data=data)
+            else:
+                return HttpResponse(status=500)
+
+            if response.status_code == 200:
+                try:
+                    return JsonResponse(response.json(), safe=False)
+                except:
+                    return JsonResponse(response.status_code, safe=False)
+            else:
+                return HttpResponse(response.status_code, status=response.status_code, content_type='application/json')
+
+        except Exception as e:
+            print(e)
+            return HttpResponse(status=500)
+
+    return HttpResponse(status=405)
 
 
 @login_required(login_url='/login/')

@@ -23,6 +23,7 @@ urlpatterns = [
     path('hlf_createMission/<int:auth_peer_id>/', views.hlf_createMission, name='hlf_createMission'),
     path('hlf_deleteMission/<int:auth_peer_id>/', views.hlf_deleteMission, name='hlf_deleteMission'),
     path('hlf_createTask/<int:auth_peer_id>/', views.hlf_createTask, name='hlf_createTask'),
+    path('hlf_getHistory/<int:auth_peer_id>/<str:mission_task_id>/', views.hlf_getHistory, name='hlf_getHistory'),
     # Update Django Model
     path('updateAuthenticationPeer/<int:auth_peer_id>/', views.updateAuthenticationPeer, name='updateAuthenticationPeer'),
     path('update_userprofile/', views.update_userprofile, name='update_userprofile'),
