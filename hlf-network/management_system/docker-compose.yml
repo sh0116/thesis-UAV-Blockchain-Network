@@ -11,7 +11,7 @@ services:
       - POSTGRES_PASSWORD=postgres
   ums:
     build: .
-    command: python  /code/manage.py runsslserver 0.0.0.0:443 --cert cert.pem --key key.pem
+    command: python /code/manage.py runsslserver 0.0.0.0:443 --cert cert.pem --key key.pem
     volumes:
       - .:/code
     ports:
