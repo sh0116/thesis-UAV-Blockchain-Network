@@ -1,13 +1,13 @@
 package main
 
 import (
+    "net/http"
 	"uav-rest-api/web"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
-	router.GET("/authenticate", web.authenticate)
 	// REST API endpoints
 	router.GET("/connect", web.ConnectHandler)
 	router.GET("/getAllTasks", web.GetAllTasksHandler)
@@ -23,5 +23,18 @@ func main() {
 	router.DELETE("/DeleteMissionByID", web.DeleteMissionByIDHandler)
 
 
-	router.Run(":3030")
+    // Replace these file paths with the paths to your own certificate and key files
+    certFile := "ums_rest.crt"
+    keyFile := "ums_rest.key"
+
+	server := &http.Server{
+        Addr:      ":3030",
+        Handler:   router,
+        TLSConfig: nil,
+    }
+
+    err := server.ListenAndServeTLS(certFile, keyFile)
+    if err != nil {
+        panic("Failed to start HTTPS server: " + err.Error())
+    }
 }

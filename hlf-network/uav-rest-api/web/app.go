@@ -73,62 +73,6 @@ type TaskIDResponse struct {
 	Lon 	string `json:"longitude"`
 }
 
-func authenticate(c *gin.Context) {
-	var payload RequestPayload
-	
-	if err := c.BindJSON(&payload); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-    // 인증 정보를 사용하여 인증 파일을 생성합니다.
-	wallet, err := gateway.NewFileSystemWallet("wallet")
-	if err != nil {
-		return fmt.Errorf("Failed to create wallet: %v", err)
-	}
-
-	err = ioutil.WriteFile("cert.pem", []byte(payload.Auth.CertPath), 0644)
-	if err != nil {
-		return fmt.Errorf("Failed to write certificate file: %v", err)
-	}
-
-	err = ioutil.WriteFile("key.pem", []byte(payload.Auth.KeyPath), 0644)
-	if err != nil {
-		return fmt.Errorf("Failed to write key file: %v", err)
-	}
-
-	identity, err := createIdentity(payload.Auth.MSPID, "cert.pem", "key.pem")
-	if err != nil {
-		return fmt.Errorf("Failed to create identity: %v", err)
-	}
-
-	err = wallet.Put(payload.Auth.MSPID, identity)
-	if err != nil {
-		return fmt.Errorf("Failed to put identity into wallet: %v", err)
-	}
-
-	// Add the TLS cert for the gateway peer
-	tlsCert, err := ioutil.ReadFile(payload.Auth.TLSCertPath)
-	if err != nil {
-		return fmt.Errorf("Failed to read tlsCertPath: %v", err)
-	}
-
-	gatewayConfig := &gateway.GatewayConfig{
-		Identity:      payload.Auth.MSPID,
-		Wallet:        wallet,
-		PeerEndpoint:  payload.Auth.PeerEndpoint,
-		GatewayPeer:   payload.Auth.GatewayPeer,
-		TLSRootCert:   tlsCert,
-	}
-
-	err = gateway.Init(gatewayConfig)
-	if err != nil {
-		return fmt.Errorf("Failed to initialize gateway: %v", err)
-	}
-
-	return nil
-}
-
-
 	
 func createGatewayConnection(payload RequestPayload) (*client.Gateway, error) {
 	clientConnection := newGrpcConnection(payload.Auth.TLSCertPath, payload.Auth.GatewayPeer, payload.Auth.PeerEndpoint)

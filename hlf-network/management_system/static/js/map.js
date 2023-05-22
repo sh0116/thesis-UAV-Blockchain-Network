@@ -15,7 +15,7 @@ function parseCoordinatesUAV(responseData) {
 
 async function fetchCoordinates() {
   try {
-    const response = await fetch('/client_uav/');
+    const response = await fetch('/fanet_getAsset/');
     const data = await response.json();
     return data;
   } catch (error) {
@@ -70,13 +70,13 @@ async function addMarkersFromData(map) {
 function populateDropdown(uavsData) {
   let dropdown = document.getElementById('inputGroupSelect01');
   while (dropdown.firstChild) {
-    dropdown.removeChild(dropdown.firstChild);
+      dropdown.removeChild(dropdown.firstChild);
   }
   for (const uavData of parseCoordinatesUAV(uavsData)) {
-    let option = document.createElement('option');
-    option.value = uavData.id;
-    option.text = uavData.name;
-    dropdown.add(option);
+      let option = document.createElement('option');
+      option.value = uavData.id;
+      option.text = uavData.name; // Changed this line to display the name
+      dropdown.add(option);
   }
 }
 
