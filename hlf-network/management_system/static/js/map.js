@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 function initMap() {
-  const apiKey = "v1.public.eyJqdGkiOiJhZjcyZjZmMy1mNzFmLTQ2ODUtYjNmNi1jN2RiNDMyNzhlMDcifZ4FPGVpo8qcfgBsSVPTQMYrbqjyIDlG78IOv_39lETVOkFfUpsZsP311dgzrfuecxR4Wb93MTN7TwbxIntE1HXznQQv_lvSPKK3Tcqjsz4gU1b2ezyhd7fL34PIwna0yT5ADDyv35ZdqoRCF93JF0fIdfZVLQB9Gk6u9CS0RIeQFKbZqlCk4Yq_h-K7no9ilXBAW9elKHEAQwXfC3kcv3UlliWXP73YG-vahE-W2CB9HSU5bvOO0UV6aAVvHMAsK6diXbysl_hU-6QCAFnL5YenxQ3EYGyIMorLgDfPCmBBTgGjKJA1_mLmuzf4jcLsIqPnI7JJRBcwPQPT_eoTrOM.YTAwN2QzYTQtMjA4OC00M2Q5LWE5ZTUtYjk4Y2U1YWUxY2Uy";
+  const apiKey = "";
   const region = "ap-northeast-1";
   const mapName = "UAV_Management_System";
   const styleUrl = `https://maps.geo.${region}.amazonaws.com/maps/v0/maps/${mapName}/style-descriptor?key=${apiKey}`;
