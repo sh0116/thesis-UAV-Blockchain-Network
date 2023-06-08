@@ -3,8 +3,6 @@ Design and Implementation of Multi-UAV Mission Management Method Based on Blockc
 
 # 블록체인 기반 무인기 관리 시스템
 
-![Untitled](asset/Untitled.png)
-
 ![Untitled](asset/Untitled%201.png)
 
 # Design and Implementation of a Blockchain-based Multi-UAV Mission Management System
