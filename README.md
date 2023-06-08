@@ -3,13 +3,9 @@ Design and Implementation of Multi-UAV Mission Management Method Based on Blockc
 
 # 블록체인 기반 무인기 관리 시스템
 
-SKILL: Docker (https://www.notion.so/Docker-51215e8e29964352a501e75cdece6914?pvs=21), AWS (https://www.notion.so/AWS-1221fce447b143c5a7094983d4bf6ca7?pvs=21), Django (https://www.notion.so/Django-7a0da627235040a7868534dc3132569f?pvs=21), github  (https://www.notion.so/github-9085d3bdefa84ee1a2126f36a3d47818?pvs=21), Python (https://www.notion.so/Python-ae972f2f860e414d94907e97cbdff34e?pvs=21), Slack (https://www.notion.so/Slack-fbb385727e914a80873750f021cca68d?pvs=21)
-시기: 2023년 2월 18일
-후원사/주최: beijing institute of technology
+![Untitled](asset/Untitled.png)
 
-![Untitled](%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%86%A8%E1%84%8E%E1%85%A6%E1%84%8B%E1%85%B5%E1%86%AB%20%E1%84%80%E1%85%B5%E1%84%87%E1%85%A1%E1%86%AB%20%E1%84%86%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AB%E1%84%80%E1%85%B5%20%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5%20%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%2090cca3dadafe474daf5b3323c4a675aa/Untitled.png)
-
-![Untitled](%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%86%A8%E1%84%8E%E1%85%A6%E1%84%8B%E1%85%B5%E1%86%AB%20%E1%84%80%E1%85%B5%E1%84%87%E1%85%A1%E1%86%AB%20%E1%84%86%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AB%E1%84%80%E1%85%B5%20%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5%20%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%2090cca3dadafe474daf5b3323c4a675aa/Untitled%201.png)
+![Untitled](asset/Untitled%201.png)
 
 # Design and Implementation of a Blockchain-based Multi-UAV Mission Management System
 
@@ -19,7 +15,6 @@ SKILL: Docker (https://www.notion.so/Docker-51215e8e29964352a501e75cdece6914?pvs
 
 ## Abstract
 
----
 
 최근 몇 년 동안 무인 항공기(UAV) 산업은 항공 기술에 정보 기술이 완전히 침투하고 새로운 하드웨어가 개발됨에 따라 빠르게 성장했습니다. 새로운 하드웨어 및 부품의 개발로 인해 빠르게 성장하고 있습니다. 개방형 환경에서 운영되는 UAV는 데이터 저장 및 관리, 네트워크 통신 등 다양한 문제에 직면해 있습니다. 데이터 저장 및 관리, 네트워크 통신 등 다양한 문제에 직면해 있습니다. 이러한 문제에 대한 해결책으로 블록체인 기술이 주목받고 있습니다. 해시 함수와 암호화가 적용된 분산 원장을 사용하여 데이터를 안전하게 저장하고 관리하는 블록체인 기술이 주목받고 있습니다. 또한 블록체인 네트워크를 통해 드론의 보안성과 투명성을 향상시킬 수 있습니다. 본 논문에서는 기존 드론 임무 관리 시스템의 문제점에 대한 해결 방안을 연구하고 구현합니다. 논문에는 다음 세 가지가 포함됩니다. 
 
@@ -31,9 +26,8 @@ SKILL: Docker (https://www.notion.so/Docker-51215e8e29964352a501e75cdece6914?pvs
 
 ## 설계 방법 및 구현 방법
 
----
 
-![Untitled](%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%86%A8%E1%84%8E%E1%85%A6%E1%84%8B%E1%85%B5%E1%86%AB%20%E1%84%80%E1%85%B5%E1%84%87%E1%85%A1%E1%86%AB%20%E1%84%86%E1%85%AE%E1%84%8B%E1%85%B5%E1%86%AB%E1%84%80%E1%85%B5%20%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5%20%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%2090cca3dadafe474daf5b3323c4a675aa/Untitled%202.png)
+![Untitled](asset/Untitled%202.png)
 
 시스템은 크게 Client, Block chain Network, FANET으로 구성되어 있습니다.
 
