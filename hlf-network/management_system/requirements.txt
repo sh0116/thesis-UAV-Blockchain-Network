@@ -3,7 +3,7 @@ backports.zoneinfo==0.2.1;python_version<"3.9"
 bootstrap4==0.1.0
 boto3==1.26.99
 botocore==1.29.99
-certifi==2022.12.7
+certifi>=2023.07.22
 cffi==1.15.1
 charset-normalizer==3.1.0
 cryptography>=41.0.2
