@@ -8,7 +8,7 @@ require (
 	github.com/hyperledger/fabric-protos-go v0.3.0
 	github.com/hyperledger/fabric-samples/asset-transfer-basic/chaincode-go v0.0.0-20231025083029-0f4f62c34061
 	github.com/stretchr/testify v1.8.2
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
